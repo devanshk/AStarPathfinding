@@ -1,4 +1,4 @@
 # AStarPathfinding
-Quick demo of A* to find the shortest path between two points.
+Quick experiment using A* to find the shortest path between two points.
 
-Open dist/index.html and click two points to try it out!
+Head to https://devanshk.github.io/AStarPathfinding/ and click two points to try it out!
