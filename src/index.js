@@ -64,7 +64,8 @@ var graphics;
 
 // Renderable Objects
 var nodeGrid = [];
-var source, target, shortestPath;
+var shortestPath = [];
+var source, target;
 
 function preload() {
 }
@@ -82,23 +83,35 @@ function create() {
       nodeGrid.push(row)
     }
 
-    source = nodeGrid[randomInt(nodeGrid.length)][randomInt(nodeGrid[0].length)];
-    target = nodeGrid[randomInt(nodeGrid.length)][randomInt(nodeGrid[0].length)];
+    // source = nodeGrid[randomInt(nodeGrid.length)][randomInt(nodeGrid[0].length)];
+    // target = nodeGrid[randomInt(nodeGrid.length)][randomInt(nodeGrid[0].length)];
 
-    source.obstacle=false; source.color = 0xffffff;
-    target.obstacle=false; target.color = 0x0000ff;
+    // source.obstacle=false; source.color = 0xffffff;
+    // target.obstacle=false; target.color = 0x0000ff;
 
     // Mouse and Keybindings
     this.input.on('pointerdown', function (pointer) {
         var coord = pointToCoord(pointer);
-        nodeGrid[coord.x][coord.y].color = 0xffffff;
-        nodeGrid[coord.x][coord.y].obstacle = false;
-    });
+        if(source == undefined || target != undefined){
+          shortestPath = [];
+          target = undefined;
+          resetNodeColors();
 
-    shortestPath = aStar(source, target, nodeGrid);
-    shortestPath.forEach(node => {node.color = 0xffffff});
-    source.color = 0x00ff00;
-    target.color = 0x0000ff;
+          source = nodeGrid[coord.x][coord.y];
+          source.color = 0x00ff00;
+          source.obstacle = false;
+        } else if (target == undefined){
+          target = nodeGrid[coord.x][coord.y];
+          target.obstacle = false;
+
+          console.log("before");
+          shortestPath = aStar(source, target, nodeGrid);
+          console.log("after");
+          shortestPath.forEach(node => {node.color = 0xffffff});
+          source.color = 0x00ff00;
+          target.color = 0x0000ff;
+        }
+    });
 }
 
 function update() {
@@ -130,14 +143,15 @@ function redraw() {
     });
 
     graphics.lineStyle(7, 0xffffff, 1);
-    graphics.strokeCircle(source.x, source.y, gridSize/4);
-    graphics.strokeCircle(target.x, target.y, gridSize/4);
+    source && graphics.strokeCircle(source.x, source.y, gridSize/4);
+    target && graphics.strokeCircle(target.x, target.y, gridSize/4);
 }
 
 function aStar(source, target, nodeGrid){
+  var minHeap = new Heap([source], Node.equal, Node.compare);
   var closedNodes = {};
 
-  var minHeap = new Heap([source], Node.equal, Node.compare);
+  resetNodeCosts();
 
   source.setCost({
     g: 0,
@@ -209,6 +223,23 @@ function getNeighbors(node){
 
   node.neighbors = neighbors;
   return neighbors;
+}
+
+function resetNodeCosts(){
+  nodeGrid.forEach(row => {
+    row.forEach(node=>{
+      node.setCost(undefined);
+      node.parent = undefined;
+    })
+  });
+}
+
+function resetNodeColors(){
+  nodeGrid.forEach(row => {
+    row.forEach(node=>{
+      node.color = new Phaser.Display.Color().random(100,100).color;
+    })
+  });
 }
 
 // Returns a random int
