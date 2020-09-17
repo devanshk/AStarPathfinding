@@ -1,3 +1,5 @@
+var Phaser = require('phaser');
+
 // Realtime Pathfinding experiment
 const screenWidth = window.innerWidth;
 const screenHeight = window.innerHeight;
