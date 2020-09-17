@@ -1,7 +1,7 @@
 var Phaser = require('phaser');
 var Heap = require("collections/heap");
 
-// Realtime Pathfinding experiment
+// Realtime Pathfinding experiment using A*
 const screenWidth = window.innerWidth;
 const screenHeight = window.innerHeight;
 
